@@ -82,12 +82,21 @@
 //NEW PLANNED SYSTEM
 
 //info for blocks
-class BlockInfo {
+struct BlockInfo {
+	uint16_t id;
 
+	uint16_t max_hp;
+
+	uint8_t tile_width;
+	uint8_t tile_height;
+
+	Texture2D texture;
 };
 
 //Hitboxes for blocks
 class Tile {
+	uint8_t size{32};
+	Tile* block_root = this;
 
 };
 
