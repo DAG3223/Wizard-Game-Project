@@ -133,7 +133,6 @@ class Tilemap {
 	
 	std::vector<std::vector<uptr_Tile>> map;
 public:
-
 	//Tilemap width & height = pow(2, power), min 1, max 16
 	Tilemap(uint8_t power) {
 		int size = pow(2, Clamp(power, 1, 16));
@@ -143,6 +142,8 @@ public:
 			row.resize(size);
 		}
 	}
+
+
 
 	//BASIC FUNCTIONALITY:
 	//~~~~~~~~~~~~~~~~~~~~
@@ -171,13 +172,55 @@ public:
 	void set_solid(uint16_t x, uint16_t y, bool s) {
 		at(x, y)->solid = s;
 	}
-		
-
+	
+	//returns if the input indices mark a valid tile index
+	bool validTarget(uint16_t x, uint16_t y) {
+		try {
+			at(x, y);
+			return true;
+		}
+		catch (std::out_of_range) {
+			return false;
+		}
+	}
 	//~~~~~~~~~~~~~~~~~~~~
 
 
 
-	//
+	//REGION MODIFICATION
+	//~~~~~~~~~~~~~~~~~~~~
+
+	//sets "occupied" flag for each tile in region. No bounds checking.
+	void occupyRegion(uint16_t x, uint16_t y, uint8_t width, uint8_t height, bool occ) {
+		for (int dY = 0; dY < height; dY++) {
+			for (int dX = 0; dX < width; dX++) {
+				set_occupied(x + dX, y + dY, occ);
+			}
+		}
+	}
+
+	//sets "solid" flag for each tile in region. No bounds checking.
+	void solidRegion(uint16_t x, uint16_t y, uint8_t width, uint8_t height, bool s) {
+		for (int dY = 0; dY < height; dY++) {
+			for (int dX = 0; dX < width; dX++) {
+				set_solid(x + dX, y + dY, s);
+			}
+		}
+	}
+		
+	//returns true if the entire region is a valid tile
+	bool validateRegion(uint16_t x, uint16_t y, uint8_t width, uint8_t height) {
+		for (int dY = 0; dY < height; dY++) {
+			for (int dX = 0; dX < width; dX++) {
+				if (!validTarget(x + dX, y + dY)) return false;
+			}
+		}
+	}
+
+
+
+	//HIGH-LEVEL FUNCS
+	//~~~~~~~~~~~~~~~~~~~~
 	void Place(uint16_t id, uint16_t x, uint16_t y) {
 		if (!empty(x, y)) return;
 		BlockInfo* info = BlockInfoArray::fetch(id);
